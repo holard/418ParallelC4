@@ -9,7 +9,9 @@ int main () {
     SeqStateScorer s;
 
     Board initial;
-    std::cout << "initial[5][5] = " << initial.state[5][5] << "\n";
+    initial.print();
+    std::cout << "\n\n";
+    //std::cout << "initial[5][5] = " << initial.state[5][5] << "\n";
     
     // insert timing code
     s.searchToDepth(initial, 0, 0);
