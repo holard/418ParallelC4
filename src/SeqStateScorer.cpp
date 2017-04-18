@@ -8,20 +8,6 @@ using boardVec = std::vector<Board>;
 using Key = std::string;
 using boardMap = std::unordered_map<Key, int>;
 
-void getMoves(Board& input, int player, boardVec& result) {
-    for (int col = 0; col < COLS; col++) {
-        if (input.state[ROWS-1][col] == 0) {
-            int nextrow = 0;
-            while (input.state[nextrow][col] != 0) {
-                nextrow++;
-            }
-            Board newboard(input);
-            newboard.state[nextrow][col] = player;
-            result.push_back(newboard);
-        }
-    }
-}
-
 int score(Board& input, int player, int depth, boardMap& memo) {
     Key key = input.getKey();
     if (memo.count(key) > 0) {

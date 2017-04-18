@@ -1,10 +1,11 @@
-
+#include "OMPScorer.h"
 #include "SeqStateScorer.h"
 #include <iostream>
 
 void playGame() {
 
-    SeqStateScorer s;
+    OMPScorer s;
+    //SeqStateScorer s;
 
     Board initial;
     while (true) {
@@ -46,14 +47,14 @@ void playGame() {
 //       different implementations perform in different situations.
 
 int main () {
-    SeqStateScorer s;
+    OMPScorer s;
 
     Board initial;
     //std::cout << "initial[5][5] = " << initial.state[5][5] << "\n";
     playGame();
     
     // insert timing code
-    s.searchToDepth(initial, 1, 6);
+    //std::cout << "Result move: " << s.searchToDepth(initial, 1, 7) << "\n";
     // timing code
     // print result
     return 0;

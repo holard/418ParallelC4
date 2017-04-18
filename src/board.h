@@ -5,9 +5,12 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <unordered_map>
 #define COLS 7
 #define ROWS 7
 #define INF 32767
+
 
 static char mapPiece(int n) {
     if (n == 0) {
@@ -103,5 +106,21 @@ class Board {
 
 };
 
+using boardVec = std::vector<Board>;
+using Key = std::string;
+using boardMap = std::unordered_map<Key, int>;
+static void getMoves(Board& input, int player, boardVec& result) {
+    for (int col = 0; col < COLS; col++) {
+        if (input.state[ROWS-1][col] == 0) {
+            int nextrow = 0;
+            while (input.state[nextrow][col] != 0) {
+                nextrow++;
+            }
+            Board newboard(input);
+            newboard.state[nextrow][col] = player;
+            result.push_back(newboard);
+        }
+    }
+}
 #endif
 
