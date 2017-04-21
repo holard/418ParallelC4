@@ -36,11 +36,12 @@ void score_base (Frontier& input, int player, boardMap& result) {
             std::vector<Key> keys;
             for (int j = 0; j < local_size; j++) {
                 Key k = input.buffer[indices[start+j]].getKey();
-                keys.push_back(k);
+                if (result.count(k) == 0)
+                    keys.push_back(k);
             }
             #pragma omp critical (map)
             {
-                for (int j = 0; j < local_size; j++) {
+                for (int j = 0; j < keys.size(); j++) {
                     Key k = keys[j];
                     int ks = scores[start+j];
                     result[k] = ks;
@@ -91,9 +92,11 @@ void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
             int sc = b.score();
             if (abs(sc) == INF) {
                 Key k = b.getKey();
-                #pragma omp critical (result)
-                {
-                    result[k] = sc;
+                if (result.count(k) == 0) {
+                    #pragma omp critical (result)
+                    {
+                        result[k] = sc;
+                    }
                 }
                 continue;
             }
@@ -120,12 +123,14 @@ void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
                 best = s;
             }
         }
+        if (result.count(k) > 0)
+            continue;
         #pragma omp critical (result)
         {
             result[k] = best;
         }
     }
-    std::cout << "States searched: " << result.size() << "\n";
+    //std::cout << "States searched: " << result.size() << "\n";
 }
 
 // returns the column to play in
