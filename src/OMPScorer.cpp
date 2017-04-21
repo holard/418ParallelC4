@@ -15,8 +15,8 @@ void deposit(Frontier& input, boardVec vec) {
 
 void score_base (Frontier& input, int player, boardMap& result) {
 
-    int local_size = 16;
-    int padding = 16;
+    int local_size = 32;
+    int padding = 32;
     int maxthreads = omp_get_max_threads();
     int* scores = new int[maxthreads * (local_size + padding)];
     int* indices = new int[maxthreads * (local_size + padding)];
@@ -33,14 +33,20 @@ void score_base (Frontier& input, int player, boardMap& result) {
         indices[start + l_count] = i;
         sizes[tnum] += 1;
         if (l_count + 1 == local_size) {
+            std::vector<Key> keys;
+            for (int j = 0; j < local_size; j++) {
+                Key k = input.buffer[indices[start+j]].getKey();
+                keys.push_back(k);
+            }
             #pragma omp critical (map)
             {
                 for (int j = 0; j < local_size; j++) {
-                    Key k = input.buffer[indices[start+j]].getKey();
+                    Key k = keys[j];
                     int ks = scores[start+j];
                     result[k] = ks;
                 }
             }
+            sizes[tnum] = 0;
         }
     }
     for (int tnum = 0; tnum < maxthreads; tnum++) {
@@ -72,7 +78,7 @@ void basic_base (Frontier& input, int player, boardMap& result) {
 void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
 
     if (depth == 0) {
-        basic_base (input, player, result);
+        score_base (input, player, result);
         return;
     }
     boardMap memo;
