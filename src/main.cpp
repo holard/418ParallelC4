@@ -1,5 +1,6 @@
 
 #include "SeqStateScorer.h"
+#include "cycleTimer.h"
 #include <iostream>
 
 void playGame() {
@@ -47,14 +48,22 @@ void playGame() {
 
 int main () {
     SeqStateScorer s;
+    double startSearchTime = 0.f;
+    double endSearchTime = 0.f;
+    double totalSearchTime = 0.f;
 
     Board initial;
     //std::cout << "initial[5][5] = " << initial.state[5][5] << "\n";
-    playGame();
-    
-    // insert timing code
+    //playGame();
+    //
+    startSearchTime = CycleTimer::currentSeconds();
+
     s.searchToDepth(initial, 1, 6);
-    // timing code
+
+    endSearchTime = CycleTimer::currentSeconds();
+    totalSearchTime = endSearchTime - startSearchTime;
+
     // print result
+    printf("Time taken: %.4f ms\n", 1000*totalSearchTime);
     return 0;
 }
