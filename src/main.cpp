@@ -1,5 +1,6 @@
 #include "OMPScorer.h"
 #include "SeqStateScorer.h"
+#include "cycleTimer.h"
 #include <iostream>
 
 void playGame() {
@@ -47,15 +48,32 @@ void playGame() {
 //       different implementations perform in different situations.
 
 int main () {
-    OMPScorer s;
+    OMPScorer o;
 
+    SeqStateScorer s;
+    double startSearchTime = 0.f;
+    double endSearchTime = 0.f;
+    double totalSearchTime = 0.f;
+
+    double startSearchTimeO = 0.f;
+    double endSearchTimeO = 0.f;
+    double totalSearchTimeO = 0.f;
     Board initial;
-    //std::cout << "initial[5][5] = " << initial.state[5][5] << "\n";
-    playGame();
-    
-    // insert timing code
-    //std::cout << "Result move: " << s.searchToDepth(initial, 1, 7) << "\n";
-    // timing code
-    // print result
+    startSearchTime = CycleTimer::currentSeconds();
+
+    s.searchToDepth(initial, 1, 6);
+
+    endSearchTime = CycleTimer::currentSeconds();
+    totalSearchTime = endSearchTime - startSearchTime;
+
+    startSearchTimeO = CycleTimer::currentSeconds();
+
+    o.searchToDepth(initial, 1, 6);
+
+    endSearchTimeO = CycleTimer::currentSeconds();
+    totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+
+    printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+    printf("OMP time taken: %.4f ms\n", 1000*totalSearchTimeO);
     return 0;
 }
