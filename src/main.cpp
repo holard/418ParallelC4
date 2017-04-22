@@ -61,14 +61,14 @@ int main () {
     Board initial;
     startSearchTime = CycleTimer::currentSeconds();
 
-    s.searchToDepth(initial, 1, 8);
+    s.searchToDepth(initial, 1, 7);
 
     endSearchTime = CycleTimer::currentSeconds();
     totalSearchTime = endSearchTime - startSearchTime;
 
     startSearchTimeO = CycleTimer::currentSeconds();
 
-    o.searchToDepth(initial, 1, 8);
+    o.searchToDepth(initial, 1, 7);
 
     endSearchTimeO = CycleTimer::currentSeconds();
     totalSearchTimeO = endSearchTimeO - startSearchTimeO;

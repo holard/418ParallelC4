@@ -5,6 +5,10 @@
 #include <iostream>
 #include <omp.h>
 
+#define PARALLEL_THRESHOLD 2000
+
+void score_frontier (Frontier& input, int player, int depth, boardMap& result);
+
 void deposit(Frontier& input, boardVec vec) {
     int num = vec.size();
     int index = __sync_fetch_and_add(&input.count, num);
@@ -76,10 +80,69 @@ void basic_base (Frontier& input, int player, boardMap& result) {
     std::cout << "States searched: " << result.size() << "\n";
 }
 
+void score_seq (Frontier& input, int player, int depth, boardMap& result) {
+
+    if (depth == 0) {
+        score_base (input, player, result);
+        return;
+    }
+    boardMap memo;
+    boardMap added;
+    {
+        Frontier next(input.count * COLS);
+
+        for (int i = 0; i < input.count; i++) {
+            Board& b = input.buffer[i];
+            int sc = b.score();
+            if (abs(sc) == INF) {
+                Key k = b.getKey();
+                if (result.count(k) == 0) {
+                    result[k] = sc;
+                }
+                continue;
+            }
+            boardVec bv;
+            getMoves(b, player, bv);
+            for (auto board : bv) {
+                Key k = board.getKey();
+                if (added.count(k) == 0) {
+                    next.buffer[next.count++] = board;
+                    added[k] = 1;
+                }
+            }
+        }
+        score_frontier(next, -player, depth-1, memo);
+    }
+    for (int i = 0; i < input.count; i++) {
+        Board& b = input.buffer[i];
+        Key k = b.getKey();
+        if (result.count(k) > 0) {
+            continue;
+        }
+        boardVec bv;
+        getMoves(b, player, bv);
+        int best = player * INF * -1;
+        for (auto board : bv) {
+            Key key = board.getKey();
+            int s = memo[key];
+            if (s*player > best*player) {
+                best = s;
+            }
+        }
+        if (result.count(k) > 0)
+            continue;
+        result[k] = best;
+    }
+    //std::cout << "States searched: " << result.size() << "\n";
+}
 void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
 
     if (depth == 0) {
         score_base (input, player, result);
+        return;
+    }
+    if (input.count < PARALLEL_THRESHOLD) {
+        score_seq(input, player, depth, result);
         return;
     }
     boardMap memo;
