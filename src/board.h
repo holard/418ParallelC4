@@ -46,6 +46,27 @@ class Board {
             std::cout << "-------\n";
         }
 
+        bool operator==(const Board &other) const {
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    if (state[row][col] != other.state[row][col])
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        int hash() {
+            int sum = 0;
+            int mult = 1;
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    sum += state[row][col] * mult;
+                    mult = mult * 13;
+                }
+            }
+        }
+
         int get(int row, int col) {
             if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
                 return 0;

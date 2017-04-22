@@ -1,5 +1,5 @@
 
-#include "board.h"
+#include "boardMap.h"
 
 class OMPScorer {
     public:
