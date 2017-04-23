@@ -1,5 +1,6 @@
 
-#include "boardMap.h"
+#include "LocklessMap.h"
+#include "board.h"
 
 class OMPScorer {
     public:

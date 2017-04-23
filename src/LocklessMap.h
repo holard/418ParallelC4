@@ -1,10 +1,10 @@
 
-#include "board.h"
+#include <string>
 
 class Node {
     public:
     Node* next;
-    Board data;
+    std::string data;
     int score;
     Node() {
         next = NULL;
@@ -14,22 +14,23 @@ class Node {
 /*
  * Thread-safe hash table for Board objects
  */
-class BoardMap {
+class LocklessMap {
 
     private:
         int width;
         Node** bins;
+        std::hash<std::string> hash;
     public:
-        BoardMap(int num_bins) {
+        LocklessMap(int num_bins) {
             width = num_bins;
             bins = new Node*[num_bins];
             for (int i = 0; i < num_bins; i++) {
-                bins[i] = new Node();
+                bins[i] = new Node;
             }
         }
 
-        int count(Board& b) {
-            int bin = b.hash() % width;
+        int count(std::string& b) {
+            int bin = hash(b) % width;
             Node* curr = bins[bin];
             while (curr->next != NULL) {
                 curr = curr->next;
@@ -40,8 +41,8 @@ class BoardMap {
             return 0;
         }
 
-        int get(Board& key) {
-            int bin = key.hash() % width;
+        int get(std::string& key) {
+            int bin = hash(key) % width;
             Node* curr = bins[bin];
             while (curr->next != NULL) {
                 curr = curr->next;
@@ -52,11 +53,11 @@ class BoardMap {
             return 0;
         }
 
-        void put(Board& key, int score) {
+        void put(std::string& key, int score) {
             Node* n = new Node();
             n->data = key;
             n->score = score;
-            int bin = key.hash() % width;
+            int bin = hash(key) % width;
             Node* curr = bins[bin];
             while (true) {
                 if (curr->next == NULL) {

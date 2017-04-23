@@ -7,7 +7,7 @@
 
 #define PARALLEL_THRESHOLD 2000
 
-void score_frontier (Frontier& input, int player, int depth, boardMap& result);
+void score_frontier (Frontier& input, int player, int depth, LocklessMap& result);
 
 void deposit(Frontier& input, boardVec vec) {
     int num = vec.size();
@@ -17,7 +17,7 @@ void deposit(Frontier& input, boardVec vec) {
     }
 }
 
-void score_base (Frontier& input, int player, boardMap& result) {
+void score_base (Frontier& input, int player, LocklessMap& result) {
 
     int local_size = 32;
     int padding = 32;
@@ -41,15 +41,9 @@ void score_base (Frontier& input, int player, boardMap& result) {
             for (int j = 0; j < local_size; j++) {
                 Key k = input.buffer[indices[start+j]].getKey();
                 if (result.count(k) == 0)
-                    keys.push_back(k);
-            }
-            #pragma omp critical (map)
-            {
-                for (int j = 0; j < keys.size(); j++) {
-                    Key k = keys[j];
-                    int ks = scores[start+j];
-                    result[k] = ks;
-                }
+                    continue;
+                int ks = scores[start+j];
+                result.put(k, ks);
             }
             sizes[tnum] = 0;
         }
@@ -60,7 +54,7 @@ void score_base (Frontier& input, int player, boardMap& result) {
         for (int j = 0; j < l_count; j++) {
             Key k = input.buffer[indices[start+j]].getKey();
             int ks = scores[start+j];
-            result[k] = ks;
+            result.put(k, ks);
         }
     }
 }
@@ -80,14 +74,14 @@ void basic_base (Frontier& input, int player, boardMap& result) {
     std::cout << "States searched: " << result.size() << "\n";
 }
 
-void score_seq (Frontier& input, int player, int depth, boardMap& result) {
+void score_seq (Frontier& input, int player, int depth, LocklessMap& result) {
 
     if (depth == 0) {
         score_base (input, player, result);
         return;
     }
-    boardMap memo;
-    boardMap added;
+    LocklessMap memo(input.count * 7);
+    LocklessMap added(input.count);
     {
         Frontier next(input.count * COLS);
 
@@ -97,7 +91,7 @@ void score_seq (Frontier& input, int player, int depth, boardMap& result) {
             if (abs(sc) == INF) {
                 Key k = b.getKey();
                 if (result.count(k) == 0) {
-                    result[k] = sc;
+                    result.put(k, sc);
                 }
                 continue;
             }
@@ -107,7 +101,7 @@ void score_seq (Frontier& input, int player, int depth, boardMap& result) {
                 Key k = board.getKey();
                 if (added.count(k) == 0) {
                     next.buffer[next.count++] = board;
-                    added[k] = 1;
+                    added.put(k,1);
                 }
             }
         }
@@ -124,18 +118,18 @@ void score_seq (Frontier& input, int player, int depth, boardMap& result) {
         int best = player * INF * -1;
         for (auto board : bv) {
             Key key = board.getKey();
-            int s = memo[key];
+            int s = memo.get(key);
             if (s*player > best*player) {
                 best = s;
             }
         }
         if (result.count(k) > 0)
             continue;
-        result[k] = best;
+        result.put(k, best);
     }
     //std::cout << "States searched: " << result.size() << "\n";
 }
-void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
+void score_frontier (Frontier& input, int player, int depth, LocklessMap& result) {
 
     if (depth == 0) {
         score_base (input, player, result);
@@ -145,7 +139,7 @@ void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
         score_seq(input, player, depth, result);
         return;
     }
-    boardMap memo;
+    LocklessMap memo(input.count * 7);
     {
         Frontier next(input.count * COLS);
 
@@ -156,10 +150,7 @@ void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
             if (abs(sc) == INF) {
                 Key k = b.getKey();
                 if (result.count(k) == 0) {
-                    #pragma omp critical (result)
-                    {
-                        result[k] = sc;
-                    }
+                    result.put(k, sc);
                 }
                 continue;
             }
@@ -181,24 +172,21 @@ void score_frontier (Frontier& input, int player, int depth, boardMap& result) {
         int best = player * INF * -1;
         for (auto board : bv) {
             Key key = board.getKey();
-            int s = memo[key];
+            int s = memo.get(key);
             if (s*player > best*player) {
                 best = s;
             }
         }
         if (result.count(k) > 0)
             continue;
-        #pragma omp critical (result)
-        {
-            result[k] = best;
-        }
+        result.put(k, best);
     }
     //std::cout << "States searched: " << result.size() << "\n";
 }
 
 // returns the column to play in
 int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
-    boardMap memo;
+    LocklessMap memo(COLS);
 
     Frontier next(COLS);
     boardVec bv;
@@ -216,7 +204,7 @@ int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
         i++;
         //board.print();
         Key k = board.getKey();
-        int bscore = memo[k];
+        int bscore = memo.get(k);
         //std::cout << "score: " << bscore << "\n";
         if (bscore*player >= best*player) {
             best = bscore;

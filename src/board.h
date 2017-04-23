@@ -94,47 +94,43 @@ class Board {
         // Uses a heuristic to score a board
         int score() {
             int sum = 0;
-            for (int i = 0; i < 100; i++) {
-                int innersum = 0;
-                computeThing(i);
-                for (int row = 0; row < ROWS; row++) {
-                    for (int col = 0; col < COLS; col++) {
-                        int p = state[row][col];
-                        if (p == 0)
-                            continue;
-                        int length = 1;
-                        while (get(row,col+length) == p) {
-                            length += 1;
-                        }
-                        if (length >= 4)
-                            return p*INF;
-                        innersum += p*length;
-                        length = 1;
-                        while (get(row+length, col) == p) {
-                            length += 1;
-                        }
-                        if (length >= 4)
-                            return p*INF;
-                        innersum += p*length;
-                        length = 1;
-                        while (get(row+length, col+length) == p) {
-                            length += 1;
-                        }
-                        if (length >= 4)
-                            return p*INF;
-                        innersum += p*length;
-                        length = 1;
-                        while (get(row+length, col-length) == p) {
-                            length += 1;
-                        }
-                        if (length >= 4)
-                            return p*INF;
-                        innersum += p*length;
+            computeThing(50);
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    int p = state[row][col];
+                    if (p == 0)
+                        continue;
+                    int length = 1;
+                    while (get(row,col+length) == p) {
+                        length += 1;
                     }
-                    sum += innersum;
+                    if (length >= 4)
+                        return p*INF;
+                    sum += p*length;
+                    length = 1;
+                    while (get(row+length, col) == p) {
+                        length += 1;
+                    }
+                    if (length >= 4)
+                        return p*INF;
+                    sum += p*length;
+                    length = 1;
+                    while (get(row+length, col+length) == p) {
+                        length += 1;
+                    }
+                    if (length >= 4)
+                        return p*INF;
+                    sum += p*length;
+                    length = 1;
+                    while (get(row+length, col-length) == p) {
+                        length += 1;
+                    }
+                    if (length >= 4)
+                        return p*INF;
+                    sum += p*length;
                 }
-                return sum / 1000;
             }
+            return sum;
         }
 
 };
