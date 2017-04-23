@@ -5,7 +5,7 @@
 #include <iostream>
 #include <omp.h>
 
-#define PARALLEL_THRESHOLD 2000
+#define PARALLEL_THRESHOLD 500
 
 void score_frontier (Frontier& input, int player, int depth, LocklessMap& result);
 
