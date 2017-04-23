@@ -49,6 +49,7 @@ void playGame() {
 
 int main () {
     OMPScorer o;
+    //playGame();
 
     SeqStateScorer s;
     double startSearchTime = 0.f;

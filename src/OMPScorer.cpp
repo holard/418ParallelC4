@@ -40,8 +40,6 @@ void score_base (Frontier& input, int player, LocklessMap& result) {
             std::vector<Key> keys;
             for (int j = 0; j < local_size; j++) {
                 Key k = input.buffer[indices[start+j]].getKey();
-                if (result.count(k) == 0)
-                    continue;
                 int ks = scores[start+j];
                 result.put(k, ks);
             }
@@ -76,12 +74,8 @@ void basic_base (Frontier& input, int player, boardMap& result) {
 
 void score_seq (Frontier& input, int player, int depth, LocklessMap& result) {
 
-    if (depth == 0) {
-        score_base (input, player, result);
-        return;
-    }
     LocklessMap memo(input.count * 7);
-    LocklessMap added(input.count);
+    boardMap added;
     {
         Frontier next(input.count * COLS);
 
@@ -90,9 +84,7 @@ void score_seq (Frontier& input, int player, int depth, LocklessMap& result) {
             int sc = b.score();
             if (abs(sc) == INF) {
                 Key k = b.getKey();
-                if (result.count(k) == 0) {
-                    result.put(k, sc);
-                }
+                result.put(k, sc);
                 continue;
             }
             boardVec bv;
@@ -101,7 +93,7 @@ void score_seq (Frontier& input, int player, int depth, LocklessMap& result) {
                 Key k = board.getKey();
                 if (added.count(k) == 0) {
                     next.buffer[next.count++] = board;
-                    added.put(k,1);
+                    added[k] = 1;
                 }
             }
         }
@@ -118,6 +110,9 @@ void score_seq (Frontier& input, int player, int depth, LocklessMap& result) {
         int best = player * INF * -1;
         for (auto board : bv) {
             Key key = board.getKey();
+            if (memo.count(key) == 0) {
+                return;
+            }
             int s = memo.get(key);
             if (s*player > best*player) {
                 best = s;
@@ -204,6 +199,8 @@ int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
         i++;
         //board.print();
         Key k = board.getKey();
+        if (memo.count(k) == 0)
+            std::cout << "Key " << k << " not found!\n";
         int bscore = memo.get(k);
         //std::cout << "score: " << bscore << "\n";
         if (bscore*player >= best*player) {
@@ -212,5 +209,6 @@ int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
         }
 
     }
+    std::cout << "score: " << best << "\n";
     return bestcol;
 }
