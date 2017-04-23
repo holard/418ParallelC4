@@ -135,6 +135,7 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
         return;
     }
     LocklessMap memo(input.count * 7);
+    LocklessMap added(input.count * 7);
     {
         Frontier next(input.count * COLS);
 
@@ -151,7 +152,15 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
             }
             boardVec bv;
             getMoves(b, player, bv);
-            deposit(next, bv);
+            boardVec dep;
+            for (auto board : bv) {
+                Key k = board.getKey();
+                if (added.count(k) == 0) {
+                    dep.push_back(board);
+                    added.put(k, 1);
+                }
+            }
+            deposit(next, dep);
         }
         score_frontier(next, -player, depth-1, memo);
     }
