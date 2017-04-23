@@ -145,9 +145,7 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
             int sc = b.score();
             if (abs(sc) == INF) {
                 Key k = b.getKey();
-                if (result.count(k) == 0) {
-                    result.put(k, sc);
-                }
+                result.put(k, sc);
                 continue;
             }
             boardVec bv;
@@ -155,9 +153,8 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
             boardVec dep;
             for (auto board : bv) {
                 Key k = board.getKey();
-                if (added.count(k) == 0) {
+                if (added.put(k,1)) {
                     dep.push_back(board);
-                    added.put(k, 1);
                 }
             }
             deposit(next, dep);
@@ -181,8 +178,6 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
                 best = s;
             }
         }
-        if (result.count(k) > 0)
-            continue;
         result.put(k, best);
     }
     //std::cout << "States searched: " << result.size() << "\n";

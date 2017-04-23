@@ -53,7 +53,7 @@ class LocklessMap {
             return 0;
         }
 
-        void put(std::string& key, int score) {
+        bool put(std::string& key, int score) {
             Node* n = new Node();
             n->data = key;
             n->score = score;
@@ -62,13 +62,31 @@ class LocklessMap {
             while (true) {
                 if (curr->next == NULL) {
                     if (__sync_bool_compare_and_swap (&(curr->next), NULL, n)) {
-                        return;
+                        return true;
                     }
                 }
                 curr = curr->next;
                 if (curr->data == key) {
                     delete n;
-                    return;
+                    return false;
+                }
+            }
+        }
+
+        bool put_seq(std::string& key, int score) {
+            int bin = hash(key) % width;
+            Node* curr = bins[bin];
+            while (true) {
+                if (curr->next == NULL) {
+                    Node* n = new Node();
+                    n->data = key;
+                    n->score = score;
+                    curr->next = n;
+                    return true;
+                }
+                curr = curr->next;
+                if (curr->data == key) {
+                    return false;
                 }
             }
         }
