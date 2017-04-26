@@ -50,7 +50,6 @@ void playGame() {
 int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
-    Board initial;
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
@@ -61,12 +60,9 @@ int main (int argc, char *argv[]) {
     double totalSearchTimeO = 0.f;
     int depth;
 
-    if (sizeof(argv) == 0){
-      argv[1] = 8;
-    }
-
-    for(int i = 1; i < sizeof(argv); i++){
-      depth = argv[i];
+    if (argc == 1){
+      depth = 8;
+      Board initial;
       startSearchTime = CycleTimer::currentSeconds();
 
       s.searchToDepth(initial, 1, depth);
@@ -81,9 +77,39 @@ int main (int argc, char *argv[]) {
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
 
-      printf("----------\nSearch to a depth of %d\n", depth);
+      printf("Search to a depth of %d\n", depth);
       printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
-      printf("OMP time taken: %.4f ms\n", 1000*totalSearchTimeO);
+      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
+    }
+
+    for(int i = 1; i < argc; i++){
+      Board initial;
+      startSearchTime = 0.f;
+      endSearchTime = 0.f;
+      totalSearchTime = 0.f;
+
+      startSearchTimeO = 0.f;
+      endSearchTimeO = 0.f;
+      totalSearchTimeO = 0.f;
+      depth = atoi(argv[i]);
+
+      startSearchTime = CycleTimer::currentSeconds();
+
+      s.searchToDepth(initial, 1, depth);
+
+      endSearchTime = CycleTimer::currentSeconds();
+      totalSearchTime = endSearchTime - startSearchTime;
+
+      startSearchTimeO = CycleTimer::currentSeconds();
+
+      o.searchToDepth(initial, 1, depth);
+
+      endSearchTimeO = CycleTimer::currentSeconds();
+      totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+
+      printf("Search to a depth of %d\n", depth);
+      printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
     }
     return 0;
 }
