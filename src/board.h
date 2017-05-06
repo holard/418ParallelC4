@@ -27,6 +27,7 @@ static int computeThing(int input) {
     for (int i = 0; i < 1000; i++) {
         acc += i % (input+1);
     }
+    return acc;
 }
 
 class Board {
@@ -72,6 +73,7 @@ class Board {
                     mult = mult * 13;
                 }
             }
+            return sum;
         }
 
         int get(int row, int col) {
@@ -146,6 +148,15 @@ class Frontier {
 using boardVec = std::vector<Board>;
 using Key = std::string;
 using boardMap = std::unordered_map<Key, int>;
+
+static void deposit(Frontier& input, boardVec vec) {
+    int num = vec.size();
+    int index = __sync_fetch_and_add(&input.count, num);
+    for (int i = 0; i < num; i++) {
+        input.buffer[index+i] = vec[i];
+    }
+}
+
 static void getMoves(Board& input, int player, boardVec& result) {
     for (int col = 0; col < COLS; col++) {
         if (input.state[ROWS-1][col] == 0) {

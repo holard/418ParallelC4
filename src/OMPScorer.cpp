@@ -9,13 +9,6 @@
 
 void score_frontier (Frontier& input, int player, int depth, LocklessMap& result);
 
-void deposit(Frontier& input, boardVec vec) {
-    int num = vec.size();
-    int index = __sync_fetch_and_add(&input.count, num);
-    for (int i = 0; i < num; i++) {
-        input.buffer[index+i] = vec[i];
-    }
-}
 
 void score_base (Frontier& input, int player, LocklessMap& result) {
 

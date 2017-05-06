@@ -6,7 +6,8 @@
 
 void playGame() {
 
-    OMPScorer s;
+    CudaScorer s;
+    //OMPScorer s;
     //SeqStateScorer s;
 
     Board initial;
@@ -50,14 +51,11 @@ void playGame() {
 
 int main () {
     CudaScorer cs;
-    int result = cs.foo();
-    if (result == 0)
-        return 0;
-    else
-        std::cout << "result of CUDA: " << result << "\n";
 
     OMPScorer o;
-    //playGame();
+    playGame();
+
+    int depth = 7;
 
     SeqStateScorer s;
     double startSearchTime = 0.f;
@@ -70,14 +68,14 @@ int main () {
     Board initial;
     startSearchTime = CycleTimer::currentSeconds();
 
-    s.searchToDepth(initial, 1, 3);
+    s.searchToDepth(initial, 1, depth);
 
     endSearchTime = CycleTimer::currentSeconds();
     totalSearchTime = endSearchTime - startSearchTime;
 
     startSearchTimeO = CycleTimer::currentSeconds();
 
-    o.searchToDepth(initial, 1, 3);
+    cs.searchToDepth(initial, 1, depth);
 
     endSearchTimeO = CycleTimer::currentSeconds();
     totalSearchTimeO = endSearchTimeO - startSearchTimeO;
