@@ -1,4 +1,6 @@
 
+#ifndef LOCKLESS_MAP
+#define LOCKLESS_MAP
 #include <string>
 
 class Node {
@@ -91,4 +93,5 @@ class LocklessMap {
             }
         }
 };
+#endif
 

@@ -1,5 +1,6 @@
 #include "OMPScorer.h"
 #include "SeqStateScorer.h"
+#include "CudaScorer.h"
 #include "cycleTimer.h"
 #include <iostream>
 
@@ -48,6 +49,13 @@ void playGame() {
 //       different implementations perform in different situations.
 
 int main () {
+    CudaScorer cs;
+    int result = cs.foo();
+    if (result == 0)
+        return 0;
+    else
+        std::cout << "result of CUDA: " << result << "\n";
+
     OMPScorer o;
     //playGame();
 
@@ -62,14 +70,14 @@ int main () {
     Board initial;
     startSearchTime = CycleTimer::currentSeconds();
 
-    s.searchToDepth(initial, 1, 8);
+    s.searchToDepth(initial, 1, 3);
 
     endSearchTime = CycleTimer::currentSeconds();
     totalSearchTime = endSearchTime - startSearchTime;
 
     startSearchTimeO = CycleTimer::currentSeconds();
 
-    o.searchToDepth(initial, 1, 8);
+    o.searchToDepth(initial, 1, 3);
 
     endSearchTimeO = CycleTimer::currentSeconds();
     totalSearchTimeO = endSearchTimeO - startSearchTimeO;

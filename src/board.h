@@ -135,6 +135,14 @@ class Board {
 
 };
 
+class Frontier {
+    public:
+    int max_size;
+    int count;
+    Board* buffer;
+    Frontier(int size) {max_size = size; count = 0; buffer = new Board[size];};
+};
+
 using boardVec = std::vector<Board>;
 using Key = std::string;
 using boardMap = std::unordered_map<Key, int>;
