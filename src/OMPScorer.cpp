@@ -5,7 +5,7 @@
 #include <iostream>
 #include <omp.h>
 
-#define PARALLEL_THRESHOLD 500
+#define PARALLEL_THRESHOLD 500000
 
 void score_frontier (Frontier& input, int player, int depth, LocklessMap& result);
 
@@ -26,7 +26,7 @@ void score_base (Frontier& input, int player, LocklessMap& result) {
     int* indices = new int[maxthreads * (local_size + padding)];
     int* sizes = new int[maxthreads]();
 
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < input.count; i++) {
         Board& b = input.buffer[i];
         int tnum = omp_get_thread_num();

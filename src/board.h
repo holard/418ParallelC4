@@ -8,7 +8,7 @@
 #include <vector>
 #include <unordered_map>
 #define COLS 7
-#define ROWS 7
+#define ROWS 6
 #define INF 32767
 
 
