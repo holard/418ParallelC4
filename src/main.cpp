@@ -1,5 +1,6 @@
 #include "OMPScorer.h"
 #include "SeqStateScorer.h"
+#include "PthreadStateScorer.h"
 #include "cycleTimer.h"
 #include <iostream>
 
@@ -50,6 +51,7 @@ void playGame() {
 int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
+    PthreadStateScorer p;
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
@@ -60,6 +62,9 @@ int main (int argc, char *argv[]) {
     double totalSearchTimeO = 0.f;
     int depth;
 
+    double startSearchTimeP = 0.f;
+    double endSearchTimeP = 0.f;
+    double totalSearchTimeP = 0.f;
     if (argc == 1){
       depth = 8;
       Board initial;
@@ -77,8 +82,17 @@ int main (int argc, char *argv[]) {
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
 
+      
+      startSearchTimeP = CycleTimer::currentSeconds();
+
+      p.searchToDepth(initial, 1, depth);
+
+      endSearchTimeP = CycleTimer::currentSeconds();
+      totalSearchTimeP = endSearchTimeP - startSearchTimeP;
+
       printf("Search to a depth of %d\n", depth);
       printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("Pthread time taken: %.4f ms\n", 1000*totalSearchTimeP);
       printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
     }
 
@@ -106,9 +120,17 @@ int main (int argc, char *argv[]) {
 
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+      
+      startSearchTimeP = CycleTimer::currentSeconds();
+
+      p.searchToDepth(initial, 1, depth);
+
+      endSearchTimeP = CycleTimer::currentSeconds();
+      totalSearchTimeP = endSearchTimeP - startSearchTimeP;
 
       printf("Search to a depth of %d\n", depth);
       printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("Pthread time taken: %.4f ms\n", 1000*totalSearchTimeP);
       printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
     }
     return 0;
