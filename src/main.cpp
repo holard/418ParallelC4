@@ -1,13 +1,16 @@
 #include "OMPScorer.h"
 #include "SeqStateScorer.h"
 #include "PthreadStateScorer.h"
+#include "CudaScorer.h"
 #include "cycleTimer.h"
 #include <iostream>
 
 void playGame() {
 
-    OMPScorer s;
+    //CudaScorer s;
+    //OMPScorer s;
     //SeqStateScorer s;
+    PthreadStateScorer s;
 
     Board initial;
     while (true) {
@@ -21,6 +24,7 @@ void playGame() {
             row += 1;
         }
         initial.state[row][col] = 1;
+        //col = s.searchDFS(initial, -1, 7);
         col = s.searchToDepth(initial, -1, 7);
         row = 0;
         while (initial.state[row][col] != 0) {
@@ -52,6 +56,7 @@ int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
     PthreadStateScorer p;
+    playGame();
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
@@ -66,7 +71,7 @@ int main (int argc, char *argv[]) {
     double endSearchTimeP = 0.f;
     double totalSearchTimeP = 0.f;
     if (argc == 1){
-      depth = 8;
+      depth = 7;
       Board initial;
       startSearchTime = CycleTimer::currentSeconds();
 
@@ -77,7 +82,7 @@ int main (int argc, char *argv[]) {
 
       startSearchTimeO = CycleTimer::currentSeconds();
 
-      o.searchToDepth(initial, 1, depth);
+      o.searchDFS(initial, 1, depth);
 
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
@@ -116,7 +121,7 @@ int main (int argc, char *argv[]) {
 
       startSearchTimeO = CycleTimer::currentSeconds();
 
-      o.searchToDepth(initial, 1, depth);
+      o.searchDFS(initial, 1, depth);
 
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
