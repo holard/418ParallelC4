@@ -6,8 +6,8 @@
 
 void playGame() {
 
-    CudaScorer s;
-    //OMPScorer s;
+    //CudaScorer s;
+    OMPScorer s;
     //SeqStateScorer s;
 
     Board initial;
@@ -22,7 +22,7 @@ void playGame() {
             row += 1;
         }
         initial.state[row][col] = 1;
-        col = s.searchToDepth(initial, -1, 7);
+        col = s.searchDFS(initial, -1, 7);
         row = 0;
         while (initial.state[row][col] != 0) {
             row += 1;
@@ -52,6 +52,7 @@ void playGame() {
 int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
+    //playGame();
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
@@ -74,7 +75,7 @@ int main (int argc, char *argv[]) {
 
       startSearchTimeO = CycleTimer::currentSeconds();
 
-      o.searchToDepth(initial, 1, depth);
+      o.searchDFS(initial, 1, depth);
 
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;
@@ -104,7 +105,7 @@ int main (int argc, char *argv[]) {
 
       startSearchTimeO = CycleTimer::currentSeconds();
 
-      o.searchToDepth(initial, 1, depth);
+      o.searchDFS(initial, 1, depth);
 
       endSearchTimeO = CycleTimer::currentSeconds();
       totalSearchTimeO = endSearchTimeO - startSearchTimeO;

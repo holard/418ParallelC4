@@ -209,3 +209,75 @@ int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
     std::cout << "score: " << best << "\n";
     return bestcol;
 }
+
+int score(Board& input, int player, int depth, LocklessMap& memo) {
+    Key key = input.getKey();
+    if (memo.count(key) > 0) {
+        return memo.get(key);
+    }
+
+    int sc = input.score();
+    if (abs(sc) == INF || depth <= 0) {
+        memo.put(key, sc);
+        return sc;
+    }
+    boardVec bv;
+    getMoves(input, player, bv);
+
+    // no moves available
+    if (bv.size() == 0) {
+        memo.put(key, sc);
+        return sc;
+    }
+
+    int best = player * INF * -1;
+    for (auto board : bv) {
+        int s = score(board, -player, depth - 1, memo);
+        if (s*player > best*player) {
+            best = s;
+        }
+    }
+    memo.put(key, best);
+    return best;
+}
+
+// returns the column to play in
+int OMPScorer::searchDFS(Board& initialState, int player, int depth) {
+    boardVec bv;
+    getMoves(initialState, player, bv);
+    LocklessMap memo(80000);
+    int best = player * INF * -1;
+    int bestcol = -1;
+    int i = 0;
+    int colToIndex[COLS];
+    int scores[COLS];
+    for (int col = 0; col < COLS; col++) {
+        if (initialState.state[ROWS-1][col] != 0)
+            colToIndex[col] = -1;
+        else
+            colToIndex[col] = i++;
+    }
+#pragma omp parallel for
+    for (int col = 0; col < COLS; col++) {
+        if (colToIndex[col] == -1)
+            continue;
+        Board& board = bv[colToIndex[col]];
+        //board.print();
+        int bscore = score(board, -player, depth-1, memo);
+        //std::cout << "score: " << bscore << "\n";
+        scores[col] = bscore;
+
+    }
+    for (int col = 0; col < COLS; col++) {
+        if (colToIndex[col] == -1)
+            continue;
+        int bscore = scores[col];
+        if (bscore*player >= best*player) {
+            best = bscore;
+            bestcol = col;
+        }
+    }
+    //std::cout << "States searched: " << memo.size() << "\nNum moves: " << bv.size() << "\n";
+    std::cout << "DFS DONE\n";
+    return bestcol;
+}
