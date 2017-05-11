@@ -46,18 +46,13 @@ void playGame() {
 }
 
 
-// TODO: Implement harness here. You may want to initialize different boards to see how
+// TODO: Initialize different boards to see how
 //       different implementations perform in different situations.
 
-int main () {
-    CudaScorer cs;
-
+int main (int argc, char *argv[]) {
     OMPScorer o;
-    //playGame();
-
-    int depth = 7;
-
     SeqStateScorer s;
+
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
     double totalSearchTime = 0.f;
@@ -65,22 +60,58 @@ int main () {
     double startSearchTimeO = 0.f;
     double endSearchTimeO = 0.f;
     double totalSearchTimeO = 0.f;
-    Board initial;
-    startSearchTime = CycleTimer::currentSeconds();
+    int depth;
 
-    s.searchToDepth(initial, 1, depth);
+    if (argc == 1){
+      depth = 7;
+      Board initial;
+      startSearchTime = CycleTimer::currentSeconds();
 
-    endSearchTime = CycleTimer::currentSeconds();
-    totalSearchTime = endSearchTime - startSearchTime;
+      s.searchToDepth(initial, 1, depth);
 
-    startSearchTimeO = CycleTimer::currentSeconds();
+      endSearchTime = CycleTimer::currentSeconds();
+      totalSearchTime = endSearchTime - startSearchTime;
 
-    cs.searchToDepth(initial, 1, depth);
+      startSearchTimeO = CycleTimer::currentSeconds();
 
-    endSearchTimeO = CycleTimer::currentSeconds();
-    totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+      o.searchToDepth(initial, 1, depth);
 
-    printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
-    printf("CUDA time taken: %.4f ms\n", 1000*totalSearchTimeO);
+      endSearchTimeO = CycleTimer::currentSeconds();
+      totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+
+      printf("Search to a depth of %d\n", depth);
+      printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
+    }
+
+    for(int i = 1; i < argc; i++){
+      Board initial;
+      startSearchTime = 0.f;
+      endSearchTime = 0.f;
+      totalSearchTime = 0.f;
+
+      startSearchTimeO = 0.f;
+      endSearchTimeO = 0.f;
+      totalSearchTimeO = 0.f;
+      depth = atoi(argv[i]);
+
+      startSearchTime = CycleTimer::currentSeconds();
+
+      s.searchToDepth(initial, 1, depth);
+
+      endSearchTime = CycleTimer::currentSeconds();
+      totalSearchTime = endSearchTime - startSearchTime;
+
+      startSearchTimeO = CycleTimer::currentSeconds();
+
+      o.searchToDepth(initial, 1, depth);
+
+      endSearchTimeO = CycleTimer::currentSeconds();
+      totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+
+      printf("Search to a depth of %d\n", depth);
+      printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
+    }
     return 0;
 }
