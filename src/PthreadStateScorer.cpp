@@ -11,7 +11,22 @@ using boardVec = std::vector<Board>;
 using Key = std::string;
 using boardMap = std::unordered_map<Key, int>;
 
-struct threadargs{Board& board; int player; int depth; LocklessMap& memo; int* result;};
+class Threadargs {
+    public:
+        Board* board;
+        int player;
+        int depth;
+        LocklessMap* memo;
+        int* result;
+        Threadargs() {}
+        Threadargs(Board* b, int p, int d, LocklessMap* m, int* res) {
+            board = b;
+            player = p;
+            depth = d;
+            memo = m;
+            result = res;
+        }
+};
 
 int pthread_score(Board& input, int player, int depth, LocklessMap& memo) {
     Key key = input.getKey();
@@ -45,8 +60,8 @@ int pthread_score(Board& input, int player, int depth, LocklessMap& memo) {
 }
 
 void *thread_func(void *arg) {
-  threadargs* myargs = (threadargs*)(arg);
-  int bscore = pthread_score(myargs->board, myargs->player, myargs->depth, myargs->memo);
+  Threadargs* myargs = (Threadargs*)(arg);
+  int bscore = pthread_score(*(myargs->board), myargs->player, myargs->depth, *(myargs->memo));
   *(myargs->result) = bscore;
 
 }
@@ -63,6 +78,7 @@ int PthreadStateScorer::searchToDepth(Board& initialState, int player, int depth
     int itocol[COLS];
 
     pthread_t threads[NUM_THREADS];
+    Threadargs* targs = new Threadargs[COLS];
 
     for (int col = 0; col < COLS; col++) {
         if (initialState.state[ROWS-1][col] != 0)
@@ -70,8 +86,8 @@ int PthreadStateScorer::searchToDepth(Board& initialState, int player, int depth
         Board& board = bv[i];
         itocol[i] = col;
         //board.print();
-        threadargs args = {board, -player, depth-1, memo, (results+i)};
-        int r = pthread_create(&threads[i], NULL, thread_func, (void *)&args);
+        targs[i] = Threadargs(&board, -player, depth-1, &memo, (results+i));
+        int r = pthread_create(&threads[i], NULL, thread_func, (void *)(targs+i));
         i++;
         //int bscore = score(board, -player, depth-1, memo);
         //std::cout << "score: " << bscore << "\n";

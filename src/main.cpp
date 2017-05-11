@@ -56,7 +56,7 @@ int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
     PthreadStateScorer p;
-    playGame();
+    //playGame();
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
