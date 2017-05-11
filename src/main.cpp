@@ -53,7 +53,7 @@ int main () {
     CudaScorer cs;
 
     OMPScorer o;
-    playGame();
+    //playGame();
 
     int depth = 7;
 
@@ -81,6 +81,6 @@ int main () {
     totalSearchTimeO = endSearchTimeO - startSearchTimeO;
 
     printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
-    printf("OMP time taken: %.4f ms\n", 1000*totalSearchTimeO);
+    printf("CUDA time taken: %.4f ms\n", 1000*totalSearchTimeO);
     return 0;
 }
