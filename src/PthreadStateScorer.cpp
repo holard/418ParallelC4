@@ -13,7 +13,7 @@ using boardMap = std::unordered_map<Key, int>;
 
 struct threadargs{Board& board; int player; int depth; LocklessMap& memo; int* result;};
 
-int score(Board& input, int player, int depth, LocklessMap& memo) {
+int pthread_score(Board& input, int player, int depth, LocklessMap& memo) {
     Key key = input.getKey();
     if (memo.count(key) > 0) {
         return memo.get(key);
@@ -35,7 +35,7 @@ int score(Board& input, int player, int depth, LocklessMap& memo) {
 
     int best = player * INF * -1;
     for (auto board : bv) {
-        int s = score(board, -player, depth - 1, memo);
+        int s = pthread_score(board, -player, depth - 1, memo);
         if (s*player > best*player) {
             best = s;
         }
@@ -46,7 +46,7 @@ int score(Board& input, int player, int depth, LocklessMap& memo) {
 
 void *thread_func(void *arg) {
   threadargs* myargs = (threadargs*)(arg);
-  int bscore = score(myargs->board, myargs->player, myargs->depth, myargs->memo);
+  int bscore = pthread_score(myargs->board, myargs->player, myargs->depth, myargs->memo);
   *(myargs->result) = bscore;
 
 }
