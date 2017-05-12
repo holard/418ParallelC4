@@ -102,6 +102,5 @@ int PthreadStateScorer::searchToDepth(Board& initialState, int player, int depth
             bestcol = itocol[j];
         }
     }
-    std::cout << "States searched: " /*<< memo.size()*/ << "\nNum moves: " << bv.size() << "\n";
     return bestcol;
 }
