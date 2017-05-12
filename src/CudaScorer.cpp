@@ -64,7 +64,7 @@ void score_frontier_cuda (Frontier& input, int player, int depth, LocklessMap& r
 }
 
 // returns the column to play in
-int CudaScorer::searchToDepth(Board& initialState, int player, int depth) {
+int CudaScorer::searchBFS(Board& initialState, int player, int depth) {
     LocklessMap memo(COLS);
 
     Frontier next(COLS);

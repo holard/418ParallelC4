@@ -177,7 +177,7 @@ void score_frontier (Frontier& input, int player, int depth, LocklessMap& result
 }
 
 // returns the column to play in
-int OMPScorer::searchToDepth(Board& initialState, int player, int depth) {
+int OMPScorer::searchBFS(Board& initialState, int player, int depth) {
     LocklessMap memo(COLS);
 
     Frontier next(COLS);

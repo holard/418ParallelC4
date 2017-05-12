@@ -67,7 +67,7 @@ void *thread_func(void *arg) {
 }
 
 // returns the column to play in
-int PthreadStateScorer::searchToDepth(Board& initialState, int player, int depth) {
+int PthreadStateScorer::searchDFS(Board& initialState, int player, int depth) {
     boardVec bv;
     getMoves(initialState, player, bv);
     LocklessMap memo(80000);

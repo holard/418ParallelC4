@@ -4,6 +4,6 @@
 class PthreadStateScorer {
     public:
         // returns the best column to play in
-        int searchToDepth(Board& initialState, int player, int depth);
+        int searchDFS(Board& initialState, int player, int depth);
 };
 
