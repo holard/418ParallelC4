@@ -49,94 +49,126 @@ void playGame() {
 }
 
 
-// TODO: Initialize different boards to see how
-//       different implementations perform in different situations.
 
 int main (int argc, char *argv[]) {
     OMPScorer o;
     SeqStateScorer s;
     PthreadStateScorer p;
+    CudaScorer c;
     //playGame();
+    int depth;
 
     double startSearchTime = 0.f;
     double endSearchTime = 0.f;
     double totalSearchTime = 0.f;
 
-    double startSearchTimeO = 0.f;
-    double endSearchTimeO = 0.f;
-    double totalSearchTimeO = 0.f;
-    int depth;
+    double startSearchTimeD = 0.f;
+    double endSearchTimeD = 0.f;
+    double totalSearchTimeD = 0.f;
+
+    double startSearchTimeOB = 0.f;
+    double endSearchTimeOB = 0.f;
+    double totalSearchTimeOB = 0.f;
+
+    double startSearchTimeOD = 0.f;
+    double endSearchTimeOD = 0.f;
+    double totalSearchTimeOD = 0.f;
 
     double startSearchTimeP = 0.f;
     double endSearchTimeP = 0.f;
     double totalSearchTimeP = 0.f;
+
+    double startSearchTimeC = 0.f;
+    double endSearchTimeC = 0.f;
+    double totalSearchTimeC = 0.f;
     if (argc == 1){
       depth = 7;
       Board initial;
+
       startSearchTime = CycleTimer::currentSeconds();
-
       s.searchBFS(initial, 1, depth);
-
       endSearchTime = CycleTimer::currentSeconds();
       totalSearchTime = endSearchTime - startSearchTime;
 
-      startSearchTimeO = CycleTimer::currentSeconds();
+      startSearchTimeD = CycleTimer::currentSeconds();
+      s.searchDFS(initial, 1, depth);
+      endSearchTimeD = CycleTimer::currentSeconds();
+      totalSearchTimeD = endSearchTimeD - startSearchTimeD;
 
+      startSearchTimeOB = CycleTimer::currentSeconds();
       o.searchDFS(initial, 1, depth);
+      endSearchTimeOB = CycleTimer::currentSeconds();
+      totalSearchTimeOB = endSearchTimeOB - startSearchTimeOB;
 
-      endSearchTimeO = CycleTimer::currentSeconds();
-      totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+      startSearchTimeOD = CycleTimer::currentSeconds();
+      o.searchDFS(initial, 1, depth);
+      endSearchTimeOD = CycleTimer::currentSeconds();
+      totalSearchTimeOD = endSearchTimeOD - startSearchTimeOD;
 
       
       startSearchTimeP = CycleTimer::currentSeconds();
-
       p.searchDFS(initial, 1, depth);
-
       endSearchTimeP = CycleTimer::currentSeconds();
       totalSearchTimeP = endSearchTimeP - startSearchTimeP;
 
+      
+      startSearchTimeC = CycleTimer::currentSeconds();
+      c.searchBFS(initial, 1, depth);
+      endSearchTimeC = CycleTimer::currentSeconds();
+      totalSearchTimeC = endSearchTimeC - startSearchTimeC;
+
       printf("Search to a depth of %d\n", depth);
-      printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
-      printf("Pthread time taken: %.4f ms\n", 1000*totalSearchTimeP);
-      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
+      printf("Sequential (BFS)time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("OMP time (BFS)taken: %.4f ms\n", 1000*totalSearchTimeOB);
+      printf("CUDA (BFS) time taken: %.4f ms\n", 1000*totalSearchTimeC);
+      printf("Sequential (DFS)time taken: %.4f ms\n", 1000*totalSearchTimeD);
+      printf("OMP time (DFS)taken: %.4f ms\n", 1000*totalSearchTimeOD);
+      printf("pthread (DFS) time taken: %.4f ms\n----------\n", 1000*totalSearchTimeP);
     }
 
     for(int i = 1; i < argc; i++){
       Board initial;
-      startSearchTime = 0.f;
-      endSearchTime = 0.f;
-      totalSearchTime = 0.f;
-
-      startSearchTimeO = 0.f;
-      endSearchTimeO = 0.f;
-      totalSearchTimeO = 0.f;
       depth = atoi(argv[i]);
 
       startSearchTime = CycleTimer::currentSeconds();
-
-      s.searchDFS(initial, 1, depth);
-
+      s.searchBFS(initial, 1, depth);
       endSearchTime = CycleTimer::currentSeconds();
       totalSearchTime = endSearchTime - startSearchTime;
 
-      startSearchTimeO = CycleTimer::currentSeconds();
+      startSearchTimeD = CycleTimer::currentSeconds();
+      s.searchDFS(initial, 1, depth);
+      endSearchTimeD = CycleTimer::currentSeconds();
+      totalSearchTimeD = endSearchTimeD - startSearchTimeD;
 
+      startSearchTimeOB = CycleTimer::currentSeconds();
       o.searchDFS(initial, 1, depth);
+      endSearchTimeOB = CycleTimer::currentSeconds();
+      totalSearchTimeOB = endSearchTimeOB - startSearchTimeOB;
 
-      endSearchTimeO = CycleTimer::currentSeconds();
-      totalSearchTimeO = endSearchTimeO - startSearchTimeO;
+      startSearchTimeOD = CycleTimer::currentSeconds();
+      o.searchDFS(initial, 1, depth);
+      endSearchTimeOD = CycleTimer::currentSeconds();
+      totalSearchTimeOD = endSearchTimeOD - startSearchTimeOD;
+
       
       startSearchTimeP = CycleTimer::currentSeconds();
-
       p.searchDFS(initial, 1, depth);
-
       endSearchTimeP = CycleTimer::currentSeconds();
       totalSearchTimeP = endSearchTimeP - startSearchTimeP;
 
+      
+      startSearchTimeC = CycleTimer::currentSeconds();
+      c.searchBFS(initial, 1, depth);
+      endSearchTimeC = CycleTimer::currentSeconds();
+      totalSearchTimeC = endSearchTimeC - startSearchTimeC;
+
       printf("Search to a depth of %d\n", depth);
-      printf("Sequential time taken: %.4f ms\n", 1000*totalSearchTime);
-      printf("Pthread time taken: %.4f ms\n", 1000*totalSearchTimeP);
-      printf("OMP time taken: %.4f ms\n----------\n", 1000*totalSearchTimeO);
+      printf("Sequential (BFS)time taken: %.4f ms\n", 1000*totalSearchTime);
+      printf("OMP time (BFS)taken: %.4f ms\n", 1000*totalSearchTimeOB);
+      printf("CUDA (BFS) time taken: %.4f ms\n", 1000*totalSearchTimeC);
+      printf("Sequential (DFS)time taken: %.4f ms\n", 1000*totalSearchTimeD);
+      printf("OMP time (DFS)taken: %.4f ms\n", 1000*totalSearchTimeOD);
+      printf("pthread (DFS) time taken: %.4f ms\n----------\n", 1000*totalSearchTimeP);
     }
     return 0;
 }
